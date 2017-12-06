@@ -36,27 +36,23 @@ int main(int argc, char *argv[])
 
         }else if( std::string(argv[2]) == "-v" ){
 
-            partialScan(argv[1], 3);            
+            partialScan(argv[1], 2);            
 
         }else if(std::string(argv[2]) == "-V"){
 
-            partialScan(argv[1], 2);
+            partialScan(argv[1], 3);
 
         }else{
             printf("%s It is not an option... \n",argv[2] );
         }
     }else if(argc == 4){
-        if( std::string(argv[2]) == "-c" ){
-            //TO-DO:
-            printf("%s\n",argv[2]);
-            int limit = atoi(argv[3]);
-            printf("%d\n", limit);
-
-        }else{
-            printf("%s It is not an option... ",argv[2] );
-        }
-    }else
+        printf("Verify command line args...");
+        exit(1);
+    }else if(argc == 5){
+        printf("Called with all flags..");
         return 0;
+    }else
+        exit(1);
 }
 
 void partialScan(string file_name, int marker)
@@ -82,14 +78,15 @@ void partialScan(string file_name, int marker)
         char*  streamedData = new char[stream_size];
 
  // Read data as a block:
-        input_file.read( streamedData,stream_size);
-        input_file.close();
+        input_file.read(streamedData, stream_size);
+        input_file.close(); //Close file
+
         if(marker == 1){//Summary
             summaryInspection(  streamedData );
-        }else if(marker == 2){//Detailed
-            highVerbosityInspection(  streamedData );
-        }else if(marker == 3){
-            lowVerbosityInspection( streamedData );
+        }else if(marker == 2){//Low Verbosity
+            lowVerbosityInspection(  streamedData );
+        }else if(marker == 3){ //High Verbosity
+            highVerbosityInspection( streamedData );
         }
     
     }else
