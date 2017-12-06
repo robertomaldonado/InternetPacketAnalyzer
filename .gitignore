@@ -1,0 +1,11 @@
+.vscode/
+tests/
+noOpt/
+smallV/
+bigV/
+diffs.txt
+dumpfile.*
+./parser3
+prog4.pdf
+rob_out.*
+parser3
