@@ -5,10 +5,10 @@
 
 using namespace std;
 
-void partialScan(string file_name, int marker);
-void highVerbosityInspection(char* streamedData);
-void summaryInspection(char* streamedData);
-void lowVerbosityInspection(char* streamedData);
+void partialScan(string file_name, int marker, bool bounded, int bound);
+void highVerbosityInspection(char* streamedData, bool bounded, int bound);
+void summaryInspection(char* streamedData, bool bounded, int bound);
+void lowVerbosityInspection(char* streamedData, bool bounded, int bound);
 void partialPrint(int eth, int broadcasts, int arp_ct,
                 int ip_ct, int udp_ct, int tcp_ct,int icmp_ct, 
                 int other_ip_ct, int other_ct);
@@ -28,34 +28,49 @@ int main(int argc, char *argv[])
         exit(1);
     }else if (argc == 2){
 
-        partialScan(argv[1], 1);
+        partialScan(argv[1], 1, 0, 0);
 
     }else if(argc == 3){
         if( std::string(argv[2]) == "-c" ){
+            
             printf("Arguments missing\n");
 
         }else if( std::string(argv[2]) == "-v" ){
 
-            partialScan(argv[1], 2);            
+            partialScan(argv[1], 2, 0 ,0);            
 
         }else if(std::string(argv[2]) == "-V"){
 
-            partialScan(argv[1], 3);
+            partialScan(argv[1], 3, 0, 0);
 
         }else{
             printf("%s It is not an option... \n",argv[2] );
         }
     }else if(argc == 4){
-        printf("Verify command line args...");
+        if( std::string(argv[2]) == "-c"){
+            partialScan(argv[1], 1, 1, atoi(argv[3]) );
+        }
+
         exit(1);
+
     }else if(argc == 5){
-        printf("Called with all flags..");
-        return 0;
+
+        if( std::string(argv[2]) == "-v" ){
+
+            partialScan(argv[1], 2, 1 ,atoi(argv[4]) );            
+
+        }else if(std::string(argv[2]) == "-V"){
+
+            partialScan(argv[1], 3, 1, atoi(argv[4]) );
+
+        }else
+            exit(1);
+
     }else
         exit(1);
 }
 
-void partialScan(string file_name, int marker)
+void partialScan(string file_name, int marker, bool bounded=0, int bound=0 )
 {
     ifstream input_file(file_name, ios::in | ios::binary);
     int ether_counter=0;
@@ -82,18 +97,18 @@ void partialScan(string file_name, int marker)
         input_file.close(); //Close file
 
         if(marker == 1){//Summary
-            summaryInspection(  streamedData );
+            summaryInspection(  streamedData, bounded, bound );
         }else if(marker == 2){//Low Verbosity
-            lowVerbosityInspection(  streamedData );
+            lowVerbosityInspection(  streamedData, bounded, bound );
         }else if(marker == 3){ //High Verbosity
-            highVerbosityInspection( streamedData );
+            highVerbosityInspection( streamedData, bounded, bound );
         }
     
     }else
     cerr << "Check file name. Does it exist under the name: " << file_name << " ?"<<endl;
 }
     
-void highVerbosityInspection(char*  streamedData){
+void highVerbosityInspection(char*  streamedData, bool bounded, int bound){
     // cout <<" Size of stream " << stream_size <<endl;
     int ether_counter=0;
     int arp_counter=0;
@@ -112,6 +127,10 @@ void highVerbosityInspection(char*  streamedData){
     int main_counter = 0;
 
     while( inspectedBytes < stream_size ){ 
+
+        if( bounded && ether_id==bound ){
+            break;
+        }
 
         printf("\nETHER:  ----- Ether Header -----\n");
         printf("ETHER:\n");
@@ -778,7 +797,7 @@ void highVerbosityInspection(char*  streamedData){
     // partialPrint(ether_counter,ether_broadcast_counter, arp_counter, ip_counter, udp_counter, tcp_counter,icmp_counter,other_ip_counter,other_ether_counter);
 }
 
-void summaryInspection(char*  streamedData){
+void summaryInspection(char*  streamedData, bool bounded, int bound){
     // cout <<" Size of stream " << stream_size <<endl;
     int ether_counter=0;
     int arp_counter=0;
@@ -798,6 +817,10 @@ void summaryInspection(char*  streamedData){
     int frame_limit = 0;
 
     while( inspectedBytes < stream_size ){ 
+
+        if( bounded && ether_id==bound ){
+            break;
+        }
 
         //printf("\nETHER:  ----- Ether Header -----\n");
         //printf("ETHER:\n");
@@ -1400,7 +1423,7 @@ void summaryInspection(char*  streamedData){
     partialPrint(ether_counter,ether_broadcast_counter, arp_counter, ip_counter, udp_counter, tcp_counter,icmp_counter,other_ip_counter,other_ether_counter);
 }
 
-void lowVerbosityInspection(char*  streamedData){
+void lowVerbosityInspection(char*  streamedData, bool bounded, int bound){
 
     int ether_counter=0;
     int arp_counter=0;
@@ -1420,6 +1443,10 @@ void lowVerbosityInspection(char*  streamedData){
     int frame_limit = 0;
 
     while( inspectedBytes < stream_size ){ 
+
+        if( bounded && ether_id==bound ){
+            break;
+        }
           
         int main_counter = 0;        
         pkt_size = 0;
