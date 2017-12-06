@@ -6,9 +6,9 @@
 using namespace std;
 
 void partialScan(string file_name, int marker);
-void inspect(char* streamedData);
-void inspect2(char* streamedData);
-void inspect3(char* streamedData);
+void highVerbosityInspection(char* streamedData);
+void summaryInspection(char* streamedData);
+void lowVerbosityInspection(char* streamedData);
 void partialPrint(int eth, int broadcasts, int arp_ct,
                 int ip_ct, int udp_ct, int tcp_ct,int icmp_ct, 
                 int other_ip_ct, int other_ct);
@@ -26,28 +26,32 @@ int main(int argc, char *argv[])
     if (argc == 1){
         cerr << "No input file" << endl;
         exit(1);
-    }else if (argc == 2){  //If regular call, present a summary
+    }else if (argc == 2){
+
         partialScan(argv[1], 1);
+
     }else if(argc == 3){
         if( std::string(argv[2]) == "-c" ){
             printf("Arguments missing\n");
+
         }else if( std::string(argv[2]) == "-v" ){
-            // printf("%s\n",argv[2]);
+
             partialScan(argv[1], 3);            
-            //Call the required function
+
         }else if(std::string(argv[2]) == "-V"){
-            // printf("%s\n",argv[2]);
+
             partialScan(argv[1], 2);
-            //Call the required function
+
         }else{
             printf("%s It is not an option... \n",argv[2] );
         }
     }else if(argc == 4){
         if( std::string(argv[2]) == "-c" ){
+            //TO-DO:
             printf("%s\n",argv[2]);
             int limit = atoi(argv[3]);
             printf("%d\n", limit);
-            // Call the function with stop at the designated number of packets 
+
         }else{
             printf("%s It is not an option... ",argv[2] );
         }
@@ -81,18 +85,18 @@ void partialScan(string file_name, int marker)
         input_file.read( streamedData,stream_size);
         input_file.close();
         if(marker == 1){//Summary
-            inspect2(  streamedData );
+            summaryInspection(  streamedData );
         }else if(marker == 2){//Detailed
-            inspect(  streamedData );
+            highVerbosityInspection(  streamedData );
         }else if(marker == 3){
-            inspect3( streamedData );
+            lowVerbosityInspection( streamedData );
         }
     
     }else
     cerr << "Check file name. Does it exist under the name: " << file_name << " ?"<<endl;
 }
     
-void inspect(char*  streamedData){
+void highVerbosityInspection(char*  streamedData){
     // cout <<" Size of stream " << stream_size <<endl;
     int ether_counter=0;
     int arp_counter=0;
@@ -173,7 +177,6 @@ void inspect(char*  streamedData){
         printf("\n");        
         inspectedBytes += 6;
         
-         
         int ether_type = 0;   
         tmp = 0;
         tmp = streamedData[inspectedBytes];            
@@ -778,7 +781,7 @@ void inspect(char*  streamedData){
     // partialPrint(ether_counter,ether_broadcast_counter, arp_counter, ip_counter, udp_counter, tcp_counter,icmp_counter,other_ip_counter,other_ether_counter);
 }
 
-void inspect2(char*  streamedData){
+void summaryInspection(char*  streamedData){
     // cout <<" Size of stream " << stream_size <<endl;
     int ether_counter=0;
     int arp_counter=0;
@@ -1159,36 +1162,6 @@ void inspect2(char*  streamedData){
                 flag6 = flag6 << 7;
                 flag6 = flag6 >> 7;
 
-                // if(flag1==0)
-                //     //printf("TCP:      ..%d. .... = No urgent pointer\n", flag1);
-                // else
-                //     //printf("TCP:      ..%d. .... = Urgent pointer\n", flag1);
-                    
-                // if(flag2==0)
-                //     //printf("TCP:      ...%d .... = No acknowledgement\n", flag2);
-                // else
-                //     //printf("TCP:      ...%d .... = Acknowledgement\n", flag2);
-
-                // if(flag3==0)
-                //     //printf("TCP:      .... %d... = No push\n", flag3);
-                // else
-                //     //printf("TCP:      .... %d... = Push\n", flag3);
-
-                // if(flag4==0)
-                //     //printf("TCP:      .... .%d.. = No reset\n", flag4);
-                // else
-                //     //printf("TCP:      .... .%d.. = Reset\n", flag4);
-
-                // if(flag5==0)
-                //     //printf("TCP:      .... ..%d. = No Syn\n", flag5);
-                // else
-                //     //printf("TCP:      .... ..%d. = Syn\n", flag5);
-                
-                // if(flag6==0)
-                //     //printf("TCP:      .... ...%d = No Fin\n", flag6);
-                // else
-                    //printf("TCP:      .... ...%d = Fin\n", flag6);
-
                 inspectedBytes+=1;
 
                 unsigned int tcp_window=0;
@@ -1330,28 +1303,6 @@ void inspect2(char*  streamedData){
             unsigned short arp_opcode=0;
             arp_tmp = streamedData[inspectedBytes+1];
             arp_opcode =  arp_opcode | arp_tmp; 
-
-            //printf("ARP:  Opcode %d" ,arp_opcode);
-            // if(arp_opcode == 1)
-            //     //printf(" (ARP Request)\n");
-            // else if(arp_opcode == 2)
-            //     //printf(" (ARP Reply)\n");
-            // else if(arp_opcode == 3)
-            //     //printf(" (RARP Request)\n");
-            // else if(arp_opcode == 4)
-            //     //printf(" (RARP Reply)\n");
-            // else if(arp_opcode == 5)
-            //     //printf(" (DRARP Request)\n");
-            // else if(arp_opcode == 6)
-            //     //printf(" (DRARP Reply)\n");
-            // else if(arp_opcode == 7)
-            //     //printf(" (DRARP Error)\n");
-            // else if(arp_opcode == 8)
-            //     //printf(" (InARP Request)\n");
-            // else if(arp_opcode == 9)
-            //     //printf(" (InARP Reply)\n");
-            // else 
-                //printf("(...)\n");
             
             inspectedBytes += 2;
 
@@ -1415,16 +1366,8 @@ void inspect2(char*  streamedData){
             unsigned char target_hw_add_5 = streamedData[inspectedBytes+4]; 
             unsigned char target_hw_add_6 = streamedData[inspectedBytes+5];
             
-            // if( arp_opcode%2 != 0)
-            //     //printf("?\n"); 
-            // else
-            //     //printf("%x:%x:%x:%x:%x:%x\n", target_hw_add_1, target_hw_add_2, target_hw_add_3, target_hw_add_4, target_hw_add_5, target_hw_add_6 );
-
             inspectedBytes+=6;
 
-            //printf("ARP:  Target protocol address = "); 
-            //TO-DOs
-            // //printf("xxx.xxx.xxx.xxx\n");
             unsigned long long arp_target_protocol=0;
             arp_tmp = streamedData[inspectedBytes];
             //printf("%d.",arp_tmp);
@@ -1441,10 +1384,6 @@ void inspect2(char*  streamedData){
             arp_tmp = streamedData[inspectedBytes+3];
             //printf("%d\n",arp_tmp);            
             arp_target_protocol =  arp_target_protocol | arp_tmp;            
-
-            // //printf("ARP:  Protocol type = %04x (IP)\n" ,arp_protocol_type);
-            // inspectedBytes += 2;
-
 
             inspectedBytes+=4;  
             //printf("ARP:\n");  
@@ -1464,8 +1403,8 @@ void inspect2(char*  streamedData){
     partialPrint(ether_counter,ether_broadcast_counter, arp_counter, ip_counter, udp_counter, tcp_counter,icmp_counter,other_ip_counter,other_ether_counter);
 }
 
-void inspect3(char*  streamedData){
-    // cout <<" Size of stream " << stream_size <<endl;
+void lowVerbosityInspection(char*  streamedData){
+
     int ether_counter=0;
     int arp_counter=0;
     int ip_counter=0;
@@ -1511,7 +1450,7 @@ void inspect3(char*  streamedData){
         int indicator = 0;
         is_broadcast = 0;
         for(int i=inspectedBytes; i < inspectedBytes + 6 ; i++){
-            //printf( "%x", (unsigned)(unsigned char) streamedData[i]); 
+ 
             tmp = streamedData[i];
             if((int)tmp == 255){
                 indicator++;
@@ -1596,27 +1535,17 @@ void inspect3(char*  streamedData){
             ip_identification = ip_identification << 8;
             ip_temp = streamedData[inspectedBytes+1];
             ip_identification =  ip_identification | ip_temp; 
-            //printf("IP:  Identification = %d\n", ip_identification);
             inspectedBytes+=2;
             
-            //printf("IP:  Flags\n");
             unsigned char ip_flag_df = 0;
             ip_flag_df =  ip_flag_df | streamedData[inspectedBytes]; 
             ip_flag_df = ip_flag_df << 1;                       
             ip_flag_df = ip_flag_df >> 7;
-            // if(ip_flag_df == 0)
-            //     //printf("IP:    .%d.. .... = allow fragment\n", ip_flag_df);
-            // else
-                //printf("IP:    .%d.. .... = do not fragment\n", ip_flag_df);
 
             unsigned char ip_flag_mf = 0;
             ip_flag_mf =  ip_flag_mf | streamedData[inspectedBytes];            
             ip_flag_mf = ip_flag_mf << 2;                       
             ip_flag_mf = ip_flag_mf >> 7;
-            // if(ip_flag_mf == 0)
-            //     //printf("IP:    ..%d. .... = last fragment\n", ip_flag_mf);
-            // else
-                //printf("IP:    ..%d. .... = last fragment\n", ip_flag_mf);
             
             unsigned short ip_frag_offset = 0;
             ip_frag_offset =  ip_frag_offset | streamedData[inspectedBytes];            
@@ -1624,7 +1553,7 @@ void inspect3(char*  streamedData){
             ip_frag_offset =  ip_frag_offset | streamedData[inspectedBytes+1];            
             ip_frag_offset = ip_frag_offset << 3;
             ip_frag_offset = ip_frag_offset >> 3;
-            //printf("IP:  Fragment offset = %d bytes\n",ip_frag_offset);           
+         
             inspectedBytes+=2;                       
             //Skip TTl
             inspectedBytes+=1;          
@@ -1632,17 +1561,6 @@ void inspect3(char*  streamedData){
             //Protocol
             unsigned char ip_protocol = 0; 
             ip_protocol =  ip_protocol | streamedData[inspectedBytes]; 
-            //printf("IP:  Protocol = %d", ip_protocol);
-
-            // //printf(");
-            // if(ip_protocol == dec_TCP)
-            //     //printf(" (TCP)\n");
-            // else if(ip_protocol == dec_UDP)
-            //     //printf(" (UDP)\n");
-            // else if(ip_protocol == dec_ICMP)
-            //     //printf(" (ICMP)\n");
-            // else 
-            //     //printf(" (unknown)\n");                
 
             inspectedBytes+=1;         
 
@@ -1653,10 +1571,9 @@ void inspect3(char*  streamedData){
             unsigned short ip_header_checksum = ip_header_checksum_one;
             ip_header_checksum = ip_header_checksum_one << 8;
             ip_header_checksum = ip_header_checksum | ip_header_checksum_two;            
-            //printf("IP:  Header checksum = %x\n" , ip_header_checksum);    
+    
             inspectedBytes+=2;        
 
-            //printf("IP:  Source address = ");
             unsigned char ip_src_1 = 0;
             unsigned char ip_src_2 = 0; 
             unsigned char ip_src_3 = 0;            
@@ -1665,10 +1582,10 @@ void inspect3(char*  streamedData){
             ip_src_2 =  ip_src_2 | streamedData[inspectedBytes+1]; 
             ip_src_3 =  ip_src_3 | streamedData[inspectedBytes+2];  
             ip_src_4 =  ip_src_4 | streamedData[inspectedBytes+3]; 
-            //printf("%d.%d.%d.%d\n", ip_src_1, ip_src_2,ip_src_3,ip_src_4);  //18e0          
+         
             inspectedBytes+=4;          
             
-            //printf("IP:  Destination address = ");            
+           
             unsigned char ip_dest_1 = 0;
             unsigned char ip_dest_2 = 0; 
             unsigned char ip_dest_3 = 0;            
@@ -1677,40 +1594,29 @@ void inspect3(char*  streamedData){
             ip_dest_2 =  ip_dest_2 | streamedData[inspectedBytes+1]; 
             ip_dest_3 =  ip_dest_3 | streamedData[inspectedBytes+2];  
             ip_dest_4 =  ip_dest_4 | streamedData[inspectedBytes+3]; 
-            //printf("%d.%d.%d.%d\n", ip_dest_1, ip_dest_2,ip_dest_3,ip_dest_4);  //18e0          
+       
             inspectedBytes+=4;         
             
             if( 5 == ip_length )
-                //printf("IP:  No options\n");
-            //printf("IP:\n"); 
             main_counter+=8;            
 
             if(ip_protocol == dec_ICMP){
                 icmp_counter++;
-                //printf("ICMP:  ----- ICMP Header -----\n");
-                //printf("ICMP: \n");
 
                 unsigned char icmp_type = 0;
                 icmp_type = icmp_type | streamedData[inspectedBytes]; 
-
-                //printf("ICMP: Type = ");
-                // if(icmp_type == 8)
-                //     //printf("%d (Echo Request)\n", icmp_type); 
-                // else
-                    //printf("%d (Echo Reply)\n", icmp_type); 
                 
                 inspectedBytes += 1;  
 
                 unsigned char icmp_code = 0;
                 icmp_code = icmp_code | streamedData[inspectedBytes];  
-                //printf("ICMP: Code = %d\n", icmp_code); 
+
                 inspectedBytes += 1;               
             
                 unsigned char icmp_checksum_one = 0;
                 unsigned char icmp_checksum_two = 0;            
                 icmp_checksum_one =  icmp_checksum_one | streamedData[inspectedBytes];  
                 icmp_checksum_two =  icmp_checksum_two | streamedData[inspectedBytes+1]; 
-                //printf("ICMP: Checksum = %2x%02x\n",icmp_checksum_one, icmp_checksum_two);
                 inspectedBytes += 2;    
 
                 unsigned char tmp = 0;
@@ -1720,7 +1626,7 @@ void inspect3(char*  streamedData){
                 icmp_id = icmp_id << 8;
                 tmp = streamedData[inspectedBytes+1];    
                 icmp_id =  icmp_id | tmp;  
-                //printf("ICMP: Identifier = %d\n", icmp_id);
+
                 inspectedBytes += 2;  
 
                 tmp = 0;
@@ -1730,10 +1636,9 @@ void inspect3(char*  streamedData){
                 icmp_seq = icmp_seq << 8;
                 tmp = streamedData[inspectedBytes+1];    
                 icmp_seq =  icmp_seq | tmp;  
-                //printf("ICMP: Sequence number = %d\n", icmp_seq);
+
                 inspectedBytes += 2;            
 
-                //printf("ICMP:\n");
                 main_counter +=8;               
                 inspectedBytes+= (current_pkt_size-main_counter)-8;
 
@@ -1758,8 +1663,7 @@ void inspect3(char*  streamedData){
                 tcp_src = tcp_src << 8;
                 tmp = streamedData[inspectedBytes+1];
                 tcp_src =  tcp_src | tmp;   
-                //printf("TCP:  Source port = %d\n", tcp_src);    
-                // //printf("Source Port = %d\n", tcp_src);                
+               
                 inspectedBytes +=2;
 
                 unsigned short tcp_dest = 0;
@@ -1768,7 +1672,7 @@ void inspect3(char*  streamedData){
                 tcp_dest = tcp_dest << 8;
                 tmp = streamedData[inspectedBytes+1];
                 tcp_dest =  tcp_dest | tmp;  
-                //printf("TCP:  Destination port = %d\n", tcp_dest);               
+          
                 inspectedBytes +=2;
                 unsigned long tcp_sequence_num =0;      
                 unsigned char temp = 0; 
@@ -1788,7 +1692,6 @@ void inspect3(char*  streamedData){
                 temp = 0 | streamedData[inspectedBytes+3];
                 tcp_sequence_num = tcp_sequence_num | temp;
 
-                //printf("TCP:  Sequence number = %lu\n", tcp_sequence_num);
                 inspectedBytes +=4;
 
                 unsigned long tcp_ack_num = 0; 
@@ -1807,17 +1710,14 @@ void inspect3(char*  streamedData){
                 tcp_ack_num = tcp_ack_num << 8;
 
                 temp = 0 | streamedData[inspectedBytes+3];
-                tcp_ack_num = tcp_ack_num | temp;
-                //printf("TCP:  Acknowledgement number = %lu\n", tcp_ack_num);               
+                tcp_ack_num = tcp_ack_num | temp;            
                 inspectedBytes +=4;          
                                 
                 unsigned char tcp_offset = 0;
                 tcp_offset =  tcp_offset | streamedData[inspectedBytes];            
-                tcp_offset = tcp_offset >> 4;
-                //printf("TCP:  Data offset = %d bytes\n", tcp_offset*4);              
+                tcp_offset = tcp_offset >> 4;             
                 inspectedBytes +=1;
 
-                //printf("TCP:  Flags\n");
                 unsigned char flags = 0;
                 flags = flags | streamedData[inspectedBytes];
                 unsigned char flag1 = flags;
@@ -1859,7 +1759,7 @@ void inspect3(char*  streamedData){
                 tcp_header_checksum = tcp_header_checksum_one;
                 tcp_header_checksum = tcp_header_checksum << 8;
                 tcp_header_checksum = tcp_header_checksum | tcp_header_checksum_two;                
-                //printf("TCP:  Checksum = %x\n",tcp_header_checksum);  
+
                 inspectedBytes+=2;
 
                 unsigned short urgent_pointer;
@@ -1868,11 +1768,7 @@ void inspect3(char*  streamedData){
                 urgent_pointer = urgent_pointer | temp;
                 urgent_pointer = urgent_pointer << 8;
                 temp = streamedData[inspectedBytes+1];
-                urgent_pointer = urgent_pointer | temp;
-                // if(!(flag1==0))
-                //     //printf("TCP:  Urgent pointer = %d\n" ,urgent_pointer); 
-                // else
-                //     //printf("TCP:  Urgent pointer = 0\n");                
+                urgent_pointer = urgent_pointer | temp;            
                                                
                 inspectedBytes+=2;
 
@@ -1895,7 +1791,7 @@ void inspect3(char*  streamedData){
                 tmp = streamedData[inspectedBytes+1];
                 udp_src =  udp_src | tmp;    
                 tmp = 0;
-                //printf("UDP:  Source port = %d\n", udp_src);                
+               
                 inspectedBytes +=2;
 
                 unsigned short udp_dest = 0;
@@ -1905,7 +1801,7 @@ void inspect3(char*  streamedData){
                 tmp = streamedData[inspectedBytes+1];
                 udp_dest =  udp_dest | tmp;
                 tmp = 0; 
-                //printf("UDP:  Destination port = %d\n", udp_dest);                
+           
                 inspectedBytes +=2;
 
                 unsigned short udp_length = 0;
@@ -1914,8 +1810,7 @@ void inspect3(char*  streamedData){
                 udp_length = udp_length << 8;
                 tmp = streamedData[inspectedBytes+1];
                 udp_length =  udp_length | tmp;
-                tmp = 0;  
-                //printf("UDP:  Message length = %d\n", udp_length);                
+                tmp = 0;                 
                 inspectedBytes +=2;
 
                 unsigned char udp_checksum_1 = 0;
@@ -1927,9 +1822,9 @@ void inspect3(char*  streamedData){
                 udp_checksum = udp_checksum_1;
                 udp_checksum = udp_checksum << 8;
                 udp_checksum = udp_checksum | udp_checksum_2;
-                //printf("UDP:  Checksum = %x\n", udp_checksum);                
+                
                 inspectedBytes +=2;
-                //printf("UDP:\n");
+
                 inspectedBytes += udp_length-8;
                
                 printf("%d.%d.%d.%d -> %d.%d.%d.%d (UDP) sourceport = %d destport = %d\n",
@@ -1952,59 +1847,33 @@ void inspect3(char*  streamedData){
             arp_hw_type = arp_hw_type << 8;
             arp_tmp = streamedData[inspectedBytes+1];            
             arp_hw_type =  arp_hw_type | arp_tmp; 
-            //printf("ARP:  Hardware type = 1 (Ethernet)\n");   
             inspectedBytes += 2;
 
             unsigned short arp_protocol_type=0;
             arp_tmp = streamedData[inspectedBytes];
             arp_protocol_type =  arp_protocol_type | arp_tmp;            
             arp_protocol_type = arp_protocol_type << 8;
+
             arp_tmp = streamedData[inspectedBytes+1];
             arp_protocol_type =  arp_protocol_type | arp_tmp;
-            //printf("ARP:  Protocol type = %04x (IP)\n" ,arp_protocol_type);
             inspectedBytes += 2;
 
             unsigned char arp_hw_add_length= 0;
             arp_hw_add_length =  arp_hw_add_length | streamedData[inspectedBytes];            
-            //printf("ARP:  Length of hardware address = %d bytes\n" ,arp_hw_add_length);
             inspectedBytes += 1;
 
             unsigned char arp_add_length=0;
             arp_add_length =  arp_add_length | streamedData[inspectedBytes];            
-            //printf("ARP:  Length of protocol address = %d bytes\n" ,arp_add_length);
             inspectedBytes += 1;
 
             unsigned short arp_opcode=0;
             arp_tmp = streamedData[inspectedBytes+1];
             arp_opcode =  arp_opcode | arp_tmp; 
-
-            //printf("ARP:  Opcode %d" ,arp_opcode);
-            // if(arp_opcode == 1)
-            //     //printf(" (ARP Request)\n");
-            // else if(arp_opcode == 2)
-            //     //printf(" (ARP Reply)\n");
-            // else if(arp_opcode == 3)
-            //     //printf(" (RARP Request)\n");
-            // else if(arp_opcode == 4)
-            //     //printf(" (RARP Reply)\n");
-            // else if(arp_opcode == 5)
-            //     //printf(" (DRARP Request)\n");
-            // else if(arp_opcode == 6)
-            //     //printf(" (DRARP Reply)\n");
-            // else if(arp_opcode == 7)
-            //     //printf(" (DRARP Error)\n");
-            // else if(arp_opcode == 8)
-            //     //printf(" (InARP Request)\n");
-            // else if(arp_opcode == 9)
-            //     //printf(" (InARP Reply)\n");
-            // else 
-                //printf("(...)\n");
             
             inspectedBytes += 2;
 
             unsigned char current_byte=0;
             unsigned char add_section=0;            
-            //printf("ARP:  Sender's hardware address = ");
 
             unsigned long long arp_sender_hardware = 0;
             unsigned char arp_sender_hardware_1 = 0;
@@ -2013,35 +1882,33 @@ void inspect3(char*  streamedData){
             unsigned char arp_sender_hardware_4 = 0;
             unsigned char arp_sender_hardware_5 = 0;
             unsigned char arp_sender_hardware_6 = 0;
-            
 
             arp_sender_hardware_1 = streamedData[inspectedBytes];
-            //printf("%x:",arp_tmp);
+
             arp_sender_hardware =  arp_sender_hardware | arp_sender_hardware_1;            
             arp_sender_hardware = arp_sender_hardware << 8;
             arp_sender_hardware_2 = streamedData[inspectedBytes+1];
-            //printf("%x:",arp_tmp);            
+           
             arp_sender_hardware =  arp_sender_hardware | arp_sender_hardware_2;            
             arp_sender_hardware = arp_sender_hardware << 8;
             arp_sender_hardware_3 = streamedData[inspectedBytes+2];
-            //printf("%x:",arp_tmp);            
+          
             arp_sender_hardware =  arp_sender_hardware | arp_sender_hardware_3;            
             arp_sender_hardware = arp_sender_hardware << 8;
             arp_sender_hardware_4 = streamedData[inspectedBytes+3];
-            //printf("%x:",arp_tmp);            
+          
             arp_sender_hardware =  arp_sender_hardware | arp_sender_hardware_4;
             arp_sender_hardware = arp_sender_hardware << 8;
             arp_sender_hardware_5 = streamedData[inspectedBytes+4];
-            //printf("%x:",arp_tmp);            
+           
             arp_sender_hardware =  arp_sender_hardware | arp_sender_hardware_5;
             arp_sender_hardware = arp_sender_hardware << 8;
             arp_sender_hardware_6 = streamedData[inspectedBytes+5];
-            //printf("%x\n",arp_tmp);            
+
             arp_sender_hardware =  arp_sender_hardware | arp_sender_hardware_6;
 
             inspectedBytes += 6;
 
-            //printf("ARP:  Sender's protocol address = ");
             unsigned char arp_sender_protocol_1 =0;
             unsigned char arp_sender_protocol_2 =0;
             unsigned char arp_sender_protocol_3 =0;
@@ -2050,24 +1917,23 @@ void inspect3(char*  streamedData){
             unsigned long long arp_sender_protocol=0;
                         
             arp_sender_protocol_1 = streamedData[inspectedBytes];
-            //printf("%d.",arp_tmp);
+
             arp_sender_protocol =  arp_sender_protocol | arp_sender_protocol_1;            
             arp_sender_protocol = arp_sender_protocol << 8;
             arp_sender_protocol_2  = streamedData[inspectedBytes+1];
-            //printf("%d.",arp_tmp);            
+          
             arp_sender_protocol =  arp_sender_protocol | arp_sender_protocol_2 ;            
             arp_sender_protocol = arp_sender_protocol << 8;
             arp_sender_protocol_3 = streamedData[inspectedBytes+2];
-            //printf("%d.",arp_tmp);            
+           
             arp_sender_protocol =  arp_sender_protocol | arp_sender_protocol_3;            
             arp_sender_protocol = arp_sender_protocol << 8;
             arp_sender_protocol_4 = streamedData[inspectedBytes+3];
-            //printf("%d\n",arp_tmp);            
+          
             arp_sender_protocol =  arp_sender_protocol | arp_sender_protocol_4;  
 
             inspectedBytes += 4;
 
-            //printf("ARP:  Target hardware address = ");
             unsigned long long target_hw_add = 0;
             unsigned char target_hw_add_1 = streamedData[inspectedBytes];
             unsigned char target_hw_add_2 = streamedData[inspectedBytes+1];
@@ -2075,17 +1941,8 @@ void inspect3(char*  streamedData){
             unsigned char target_hw_add_4 = streamedData[inspectedBytes+3]; 
             unsigned char target_hw_add_5 = streamedData[inspectedBytes+4]; 
             unsigned char target_hw_add_6 = streamedData[inspectedBytes+5];
-            
-            // if( arp_opcode%2 != 0)
-            //     //printf("?\n"); 
-            // else
-            //     //printf("%x:%x:%x:%x:%x:%x\n", target_hw_add_1, target_hw_add_2, target_hw_add_3, target_hw_add_4, target_hw_add_5, target_hw_add_6 );
 
             inspectedBytes+=6;
-
-            //printf("ARP:  Target protocol address = "); 
-            //TO-DOs
-            // //printf("xxx.xxx.xxx.xxx\n");
 
             unsigned long long arp_target_protocol=0;
             unsigned char arp_target_protocol_1=0;
@@ -2120,14 +1977,7 @@ void inspect3(char*  streamedData){
             }else if(is_broadcast == 1 && arp_opcode == 1 ){ //Requesting for an adress in bcast
                 printf("%d.%d.%d.%d -> (broadcast) (ARP) who is %d.%d.%d.%d\n",
                 arp_sender_protocol_1, arp_sender_protocol_2, arp_sender_protocol_3, arp_sender_protocol_4,
-                arp_target_protocol_1, arp_target_protocol_2, arp_target_protocol_3, arp_target_protocol_4);                
-            // }else if( is_broadcast == 1 && arp_opcode == 2 ){
-            //     printf("%d.%d.%d.%d -> (broadcast) (ARP) %d.%d.%d.%d's hardware address is %x:%x:%x:%x:%x:%x\n",
-            //     arp_sender_protocol_1, arp_sender_protocol_2, arp_sender_protocol_3, arp_sender_protocol_4,
-            //     // arp_target_protocol_1, arp_target_protocol_2, arp_target_protocol_3, arp_target_protocol_4,
-            //     arp_sender_protocol_1, arp_sender_protocol_2, arp_sender_protocol_3, arp_sender_protocol_4,
-            //     arp_sender_hardware_1, arp_sender_hardware_2, arp_sender_hardware_3,
-            //     arp_sender_hardware_4, arp_sender_hardware_5, arp_sender_hardware_6);
+                arp_target_protocol_1, arp_target_protocol_2, arp_target_protocol_3, arp_target_protocol_4);
             }else{
                 printf("%d.%d.%d.%d -> %d.%d.%d.%d (ARP) %d.%d.%d.%d's hardware address is %x:%x:%x:%x:%x:%x\n",
                 arp_sender_protocol_1, arp_sender_protocol_2, arp_sender_protocol_3, arp_sender_protocol_4,
@@ -2152,23 +2002,11 @@ void inspect3(char*  streamedData){
         }
         ether_id++;
     }
-
-    // partialPrint(ether_counter,ether_broadcast_counter, arp_counter, ip_counter, udp_counter, tcp_counter,icmp_counter,other_ip_counter,other_ether_counter);
 }
 
 void partialPrint(int eth = 0, int broadcasts = 0, int arp_ct=0, int ip_ct = 0, 
                     int udp_ct=0, int tcp_ct=0,int icmp_ct=0, int other_ip_ct=0, 
                     int other_ct=0){
-
-    // printf("Ethernet frames:  %d\n", eth);
-    // printf("Ethernet broadcast: \t %d\n" , broadcasts);
-    // printf("  ARP packets:  \t %d\n" , arp_ct );
-    // printf("  IP packets: \t %d\n" , ip_ct );
-    // printf("    UDP packets:  %d\n"  , udp_ct );
-    // printf("    TCP packets:  %d\n" , tcp_ct );
-    // printf("    ICMP packets: \t %d\n"  , icmp_ct );
-    // printf("    other IP packets: \t %d\n"  , other_ip_ct );
-    // printf("  other packets:  %d\n"  , other_ct);
 
     printf("Ethernet frames: 	%d\n",eth);
     printf("Ethernet broadcast: 	%d\n",broadcasts);
@@ -2180,127 +2018,4 @@ void partialPrint(int eth = 0, int broadcasts = 0, int arp_ct=0, int ip_ct = 0,
     printf("    other IP packets: 	%d\n",other_ip_ct);
     printf("  other packets: 	%d\n",other_ct);
 
-}
-
-void printEtherPkt(int id, int size, long long dest, long long src, long ether_type){
-    printf("ETHER:  ------ Ether Header ------  ");
-    printf("ETHER:");
-    printf("ETHER:  Packet size = %d bytes", id);    
-    printf("ETHER:  Destination = (print in hex) ");
-    printf("ETHER:  Source      = (print in hex) ");
-    printf("ETHER:  Ethertype   = (print in hex) ");
-    printf("ETHER:");
-
-    if(ether_type == 2048){ //Decimal for 0x0800 (IP)
-        printf("(IP)");  
-    }else if(ether_type == 2054){ //Decimal for 0x0806 (ARP)
-        printf("(ARP)");                   
-    }else{
-        printf("(unknown)");                   
-    }
-}
-void printArpPkt(){
-    printf("ARP: ------ ARP Frame ------  \n");
-    printf("ARP:\n");
-    //TO-DO: Validate content of parenthesis 
-    printf("ARP:  Hardware type = 1 (Ethernet)\n");   
-    //TO-DO: Validate content of parenthesis      
-    printf("ARP:  Protocol type = (print in hex)(IP) \n");
-    //TO-DO: Validate content of parenthesis      
-    printf("ARP:  Length of hardware address = (6) bytes \n");
-    //TO-DO: Validate content of parenthesis          
-    printf("ARP:  Length of protocol address = (4) bytes \n");
-    //TO-DO: Validate content of parenthesis          
-    printf("ARP:  Opcode (1) (ARP Request)\n");
-    //TO-DO: Validate content of parenthesis              
-    printf("ARP:  Sender's hardware address = (hex)\n");
-    //TO-DO: Validate content of parenthesis              
-    printf("ARP:  Sender's protocol address = (dec)\n");
-    //TO-DO: Validate content of parenthesis          
-    printf("ARP:  Target hardware address = (?)\n");
-    //TO-DO: Validate content of parenthesis          
-    printf("ARP:  Target protocol address = (dec)\n");  
-    //TO-DO: Validate content of parenthesis          
-    printf("ARP:\n");
-}
-void printIpPkt(){
-    printf("IP:  ------ Ip Header ------  \n");
-    printf("IP:\n");
-    printf("IP:  Version = %d");    
-    printf("IP:  Header length = %d bytes\n");
-    printf("IP:  Type of service = %d");
-    printf("IP:  Total length = %d bytes\n");
-    printf("IP:  Identification: 0\n");
-    printf("IP:  Flags  \n");
-    printf("IP:  .1.. .... = do not fragment\n");
-    printf("IP:  ..0. .... = last fragment\n");   
-    printf("IP:  Fragment offset: %d bytes\n");
-    printf("IP:  Protocol = 1 (ICMP)\n");
-    printf("IP:  Header Checksum = (print in hex) \n");
-    printf("IP:  Source address = (in decimal)\n");
-    printf("IP:  Destination address = (in decimal)\n");
-    printf("IP:  No options \n");
-    printf("IP:\n"); 
-    
-}
-void printIcmpPkt(){
-    printf("ICMP:  ------ ICMP Header ------  \n");
-    printf("ICMP:\n");
-    printf("ICMP:  Type = %d (Echo request)\n");    
-    printf("ICMP:  Code = %d\n");
-    printf("ICMP:  Checksum = (print in hex)\n");
-    printf("ICMP:  Identifier   = %d\n");
-    printf("ICMP:\n");    
-}
-void printUdpPkt(){
-    printf("UDP:  ------ UDP Header ------  \n");
-    printf("UDP:\n");
-    printf("UDP:  Source Port = %d\n");    
-    printf("UDP:  Destination Port = %d\n");    
-    printf("UDP:  Message lenght = %d\n");
-    printf("UDP:  Checksum = (print in hex)\n");
-    printf("UDP:\n");
-}
-void printTcpPkt(){
-    printf("TCP:  ------ TCP Header ------  \n");
-    printf("TCP:\n");
-    printf("TCP:  Source Port = %d\n");    
-    printf("TCP:  Destination Port = %d\n");
-    printf("TCP:  Sequence number = %d\n");
-    printf("TCP:  Acknowledgement number = %d\n");
-    printf("TCP:  Data Offset = %d bytes");
-    printf("TCP:  Flags \n");
-    printf("TCP:  ..0. .... = No urgent pointer\n");
-    printf("TCP:  ...1 .... = Acknowledgement\n");
-    printf("TCP:  .... 0... = No push\n");
-    printf("TCP:  .... .0.. = No reset\n");
-    printf("TCP:  .... ..0. = No Syn\n");
-    printf("TCP:  .... ...0 = No Fin\n");
-    printf("TCP:  Window = %d \n");
-    printf("TCP:  Checksum = (print in hex)\n");
-    printf("TCP: Urgent pointer = %d");
-    printf("TCP:  ------ UDP Header ------  \n");
-    printf("TCP:  Checksum = (print in hex)\n");
-    printf("TCP:");
-}
-
-
-void printIntermediate(){
-    //Print the unknow packet dest, src address.
-    printf("unknown packet (%02x:%02x:%02x:%02x:%02x:%02x",(unsigned)(unsigned char) 'c',
-                           (unsigned)(unsigned char) 'c', (unsigned)(unsigned char) 'c',
-                           (unsigned)(unsigned char) 'c', (unsigned)(unsigned char) 'c',
-                           (unsigned)(unsigned char) 'c' );
-    printf(", %02x:%02x:%02x:%02x:%02x:%02x",(unsigned)(unsigned char) 'c',
-                           (unsigned)(unsigned char) 'c', (unsigned)(unsigned char) 'c',
-                           (unsigned)(unsigned char) 'c', (unsigned)(unsigned char) 'c',
-                           (unsigned)(unsigned char) 'c' );
-    printf(", 0:%02x)\n",(unsigned)(unsigned char) 'c' );
-
-    //In case of ARP broadcast
-    printf("%d.%d.%d.%d -> (broadcast) (ARP) who is %d.%d.%d.%d", 'c', 'c', 'c','c',
-                                                    'c','c','c','c');
-    //In case of ARP 
-    printf("%d.%d.%d.%d -> %d.%d.%d.%d (ARP) who is %d.%d.%d.%d", 'c', 'c', 'c','c',
-                                                    'c','c','c','c','c','c','c','c');
 }
