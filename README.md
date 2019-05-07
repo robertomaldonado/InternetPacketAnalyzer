@@ -1,6 +1,11 @@
+############################################
+           #INTERNET PACKET ANALYZER 
 #############################################
-            INTERNET PACKET ANALYZER 
-#############################################
+
+PURPOSE
+=======
+Software implemented to experience with packet analyzing and the different Internet packet formats (ARP, ).
+
 The following program works as following:
 
 To Compile: 
