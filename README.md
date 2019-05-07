@@ -34,4 +34,4 @@ Depending on the command line options, different levels of statistics and the pa
     -c <Number of packets>  =>   Option specifies the number of frames to be processed.
     
 ### Sample Dump files:
-May be found in  the "Dumfiles" directorty
+May be found in  the "Dumfiles" directory
