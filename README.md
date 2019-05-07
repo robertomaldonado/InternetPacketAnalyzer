@@ -4,9 +4,9 @@ PURPOSE
 -------
 Software implemented to experience with packet analyzing and the different Internet packet formats as ethernet frames:
 
-.* ARP Packets
-.* IP Packets (UDP, TCP, ICMP, other)  
-.* Packets that belong to other protocols
+..* ARP Packets
+..* IP Packets (UDP, TCP, ICMP, other)  
+..* Packets that belong to other protocols
 
 ### The following program works as following:
 
