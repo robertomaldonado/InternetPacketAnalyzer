@@ -2,7 +2,7 @@ INTERNET PACKET ANALYZER
 ========================
 PURPOSE
 -------
-Software implemented to experience with packet analyzing and the different Internet packet formats as ethernet frames (as espicied in the RFC - Request For Comments - for each different protocol):
+Software implemented to experience with packet analyzing and the different Internet packet formats as ethernet frames (as especified in the RFCs - Request For Comments - for each protocol):
 * ARP Packets
 * IP Packets (UDP, TCP, ICMP, other)  
 * Packets that belong to other protocols
