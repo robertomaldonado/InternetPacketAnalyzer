@@ -9,7 +9,7 @@ CFLAGS= -O2
 all: ./parser 
 
 parser:
-	$(CC) $(CFLAGS) parser3.cpp -o parser3
+	$(CC) $(CFLAGS) packetInspector.cpp -o packetInspector
 
 clean: 
-	rm -rf *.o parser
+	rm -rf *.o packetInspector
