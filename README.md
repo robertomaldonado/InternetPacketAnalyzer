@@ -49,3 +49,7 @@ with the following output:
     ICMP packets:       0
     other IP packets:   0
   other packets:        1
+
+### WARNING: 
+#### If using the shell, change permission accordingly (As default they were set to 444):
+chmod ### testAll.sh
