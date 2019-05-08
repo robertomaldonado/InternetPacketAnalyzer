@@ -23,7 +23,7 @@ Depending on the command line options, different levels of statistics and the pa
     make all (Using the provided Makefile)
     
   #### To Execute:
-    ./parser3 filename <control_flag> <count_flag> <number_count_limit>
+    ./packetInspector filename <control_flag> <count_flag> <number_count_limit>
 
   #### Adding options to the command execution:
 
@@ -35,3 +35,17 @@ Depending on the command line options, different levels of statistics and the pa
     
 ### Sample Dump files:
 May be found in  the "Dumfiles" directory
+
+A sample execution looks like this:
+    ./packetInspector Dumpfiles/dumpfile.3
+    
+with the following output:
+
+    Ethernet broadcast:     0
+      ARP packets:          0
+    IP packets:           2
+    UDP packets:        0
+    TCP packets:        2
+    ICMP packets:       0
+    other IP packets:   0
+  other packets:        1
