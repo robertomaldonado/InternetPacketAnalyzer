@@ -42,13 +42,13 @@ A sample execution looks like this:
 with the following output:
 
     Ethernet broadcast:     0
-      ARP packets:          0
-    IP packets:           2
-    UDP packets:        0
-    TCP packets:        2
-    ICMP packets:       0
-    other IP packets:   0
-  other packets:        1
+       ARP packets:          0
+     IP packets:           2
+     UDP packets:        0
+     TCP packets:        2
+     ICMP packets:       0
+     other IP packets:   0
+    other packets:        1
 
 ### WARNING: 
 #### If using the shell, change permission accordingly (As default they were set to 444):
